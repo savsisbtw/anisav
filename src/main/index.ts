@@ -1,13 +1,14 @@
 import { app, BrowserWindow, ipcMain, safeStorage, shell } from 'electron'
 import { join } from 'path'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
+import { GATEWAYS, fetchWithFailover } from '../shared/gateways'
 
 app.setName('AniSav')
 
 const isDev = !app.isPackaged
-const API_BASE = 'https://api.savsis.xyz/api/anilibria/api/v1'
 
 const tokenPath = join(app.getPath('userData'), 'token.bin')
+const gatewayPath = join(app.getPath('userData'), 'gateway.txt')
 const PLAIN_PREFIX = 'plain:'
 
 // The Bearer token lives only here in the main process — the renderer
@@ -42,9 +43,30 @@ function clearToken(): void {
   if (existsSync(tokenPath)) writeFileSync(tokenPath, '')
 }
 
+function loadGateway(): number {
+  try {
+    const n = Number(readFileSync(gatewayPath, 'utf-8'))
+    return n >= 0 && n < GATEWAYS.length ? n : 0
+  } catch {
+    return 0
+  }
+}
+
+let gateway = loadGateway()
+
+async function gatewayFetch(path: string, init?: RequestInit): Promise<Response> {
+  const { res, index } = await fetchWithFailover(path, init, gateway)
+  if (index !== gateway) {
+    gateway = index
+    mkdirSync(app.getPath('userData'), { recursive: true })
+    writeFileSync(gatewayPath, String(index), 'utf-8')
+  }
+  return res
+}
+
 async function api(path: string, opts: { method?: string; body?: unknown } = {}) {
   if (!token) throw new Error('Не авторизован')
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await gatewayFetch(path, {
     method: opts.method || 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -69,7 +91,7 @@ function registerIpc(): void {
   })
 
   ipcMain.handle('auth:login', async (_e, login: string, password: string, remember: boolean) => {
-    const res = await fetch(`${API_BASE}/accounts/users/auth/login`, {
+    const res = await gatewayFetch('/accounts/users/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ login, password }),

@@ -8,18 +8,38 @@ import type {
   ScheduleNow,
   ValueDescription,
 } from '../../../shared/types'
+import { GATEWAYS, fetchWithFailover } from '../../../shared/gateways'
 
-const GATEWAY = 'https://api.savsis.xyz/api/anilibria'
-const API_BASE = `${GATEWAY}/api/v1`
+const STORAGE_KEY = 'gateway'
+
+function loadActive(): number {
+  try {
+    const n = Number(localStorage.getItem(STORAGE_KEY))
+    return n >= 0 && n < GATEWAYS.length ? n : 0
+  } catch {
+    return 0
+  }
+}
+
+let active = loadActive()
+
+function setActive(index: number): void {
+  if (index === active) return
+  active = index
+  try {
+    localStorage.setItem(STORAGE_KEY, String(index))
+  } catch {}
+}
 
 export function imageUrl(path?: string | null): string | undefined {
   if (!path) return undefined
   if (path.startsWith('http')) return path
-  return `${GATEWAY}${path}`
+  return `${GATEWAYS[active]}${path}`
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, init)
+  const { res, index } = await fetchWithFailover(path, init, active)
+  setActive(index)
   if (!res.ok) {
     throw new Error(`AniLiberty API ${res.status}: ${path}`)
   }
