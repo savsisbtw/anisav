@@ -24,22 +24,26 @@ export default function Schedule() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-6">
-      <h1 className="mb-4 text-xl font-bold tracking-tight">Расписание выхода серий</h1>
-      <div className="space-y-8">
-        {DAY_ORDER.filter((d) => byDay.has(d)).map((day) => (
-          <div key={day}>
-            <h2 className="mono-label mb-3 text-accent-2">
-              {byDay.get(day)![0].release.publish_day?.description}
-            </h2>
-            <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7">
-              {byDay.get(day)!.map((item) => (
-                <AnimeCard key={item.release.id} release={item.release} />
-              ))}
-            </div>
-          </div>
-        ))}
+    <div>
+      <div className="ph">
+        <div>
+          <h1>Расписание</h1>
+          <p>Выход серий по дням недели</p>
+        </div>
       </div>
+      {DAY_ORDER.filter((d) => byDay.has(d)).map((day) => (
+        <section key={day} className="section">
+          <h2 className="section-title">
+            {byDay.get(day)![0].release.publish_day?.description}
+            <span className="mono">{byDay.get(day)!.length}</span>
+          </h2>
+          <div className="grid-posters">
+            {byDay.get(day)!.map((item) => (
+              <AnimeCard key={item.release.id} release={item.release} />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   )
 }

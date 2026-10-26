@@ -177,7 +177,7 @@ function createWindow(): void {
     height: 860,
     minWidth: 960,
     minHeight: 600,
-    backgroundColor: '#121212',
+    backgroundColor: '#000000',
     autoHideMenuBar: true,
     title: 'AniSav',
     icon: join(__dirname, '../../build/icon.ico'),

@@ -27,44 +27,45 @@ export default function History() {
   }, [user])
 
   if (authLoading) return <Loader />
-  if (!user) return <p className="py-24 text-center text-white/40">Войдите, чтобы видеть историю просмотра</p>
+  if (!user) return <p className="empty">Войди, чтобы видеть историю просмотра</p>
   if (!items) return <Loader />
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-6">
-      <h1 className="mb-4 text-xl font-bold tracking-tight">История просмотра</h1>
-      {items.length === 0 && <p className="py-16 text-center text-white/40">История пуста</p>}
-      <div className="space-y-2">
-        {items.filter((item) => item.release && item.release_episode).map((item) => (
-          <Link
-            key={item.id}
-            to={`/title/${item.release.alias || item.release.id}`}
-            className="flex items-center gap-3 rounded-xl bg-white/5 p-2.5 transition-colors hover:bg-white/10"
-          >
-            <img
-              src={imageUrl(item.release.poster?.optimized?.thumbnail || item.release.poster?.thumbnail)}
-              alt=""
-              className="h-16 w-12 shrink-0 rounded-lg object-cover"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{item.release.name.main}</p>
-              <p className="text-xs text-white/40">
-                Серия {item.release_episode.ordinal}
-                {item.release_episode.name ? ` — ${item.release_episode.name}` : ''}
-              </p>
-              <p className="mt-0.5 font-mono text-[10px] text-white/30">{formatDate(item.updated_at)}</p>
-            </div>
-            {item.is_watched ? (
-              <span className="mono-label shrink-0 rounded bg-white/10 px-2 py-1 text-white/50">
-                Просмотрено
+    <div style={{ maxWidth: 760 }}>
+      <div className="ph">
+        <div>
+          <h1>История</h1>
+          <p>Последние просмотренные серии</p>
+        </div>
+      </div>
+      {items.length === 0 && <p className="empty">История пуста</p>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {items
+          .filter((item) => item.release && item.release_episode)
+          .map((item) => (
+            <Link key={item.id} to={`/title/${item.release.alias || item.release.id}`} className="row-item">
+              <img
+                src={imageUrl(item.release.poster?.optimized?.thumbnail || item.release.poster?.thumbnail)}
+                alt=""
+                style={{ width: 40, height: 56, borderRadius: 4, objectFit: 'cover', flexShrink: 0 }}
+              />
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p className="line-clamp-2" style={{ margin: 0, fontSize: 13.5, fontWeight: 500 }}>
+                  {item.release.name.main}
+                </p>
+                <p className="muted" style={{ margin: '3px 0 0', fontSize: 12 }}>
+                  Серия {item.release_episode.ordinal}
+                  {item.release_episode.name ? ` · ${item.release_episode.name}` : ''}
+                </p>
+                <p className="mono" style={{ margin: '3px 0 0', fontSize: 11, color: 'var(--dim)' }}>
+                  {formatDate(item.updated_at)}
+                </p>
+              </div>
+              <span className={`chip${item.is_watched ? '' : ' on'}`}>
+                {item.is_watched ? 'Просмотрено' : 'В процессе'}
               </span>
-            ) : (
-              <span className="mono-label shrink-0 rounded bg-accent-soft px-2 py-1 text-accent">
-                В процессе
-              </span>
-            )}
-          </Link>
-        ))}
+            </Link>
+          ))}
       </div>
     </div>
   )

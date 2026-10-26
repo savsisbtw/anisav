@@ -1,10 +1,12 @@
-[![ci](https://github.com/devsavsis/anisav/actions/workflows/ci.yml/badge.svg)](https://github.com/devsavsis/anisav/actions/workflows/ci.yml)
+[![ci](https://github.com/savsisbtw/anisav/actions/workflows/ci.yml/badge.svg)](https://github.com/savsisbtw/anisav/actions/workflows/ci.yml)
 
 Я че умный?
 
 # anisav
 
-десктопное приложение для аниме, дергает AniLiberty API. electron + react + ts.
+десктопное приложение для аниме, дергает AniLiberty API. electron + react + ts. дизайн строгий: чёрный, белый, тонкие линии, Inter + JetBrains Mono.
+
+тот же интерфейс собирается и как сайт: https://anisav.savsis.xyz
 
 каталог с фильтрами, поиск, расписание, плеер с автопропуском опенинга/эндинга и продолжением просмотра, локальный вишлист без аккаунта, вход в аккаунт если надо синк списков.
 
@@ -21,6 +23,9 @@ npm run dev
 
 ```
 npm run build:win
+npm run build:web
 ```
+
+`build:web` кладёт сайт в `out/web`, это просто статика. на сервере рядом нужен nginx с проксёй `/api/anilibria/` на aniliberty.top.
 
 сделано im.savsis.xyz

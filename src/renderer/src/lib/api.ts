@@ -15,10 +15,10 @@ const STORAGE_KEY = 'gateway'
 function loadActive(): number {
   try {
     const n = Number(localStorage.getItem(STORAGE_KEY))
-    return n >= 0 && n < GATEWAYS.length ? n : 0
-  } catch {
-    return 0
-  }
+    if (localStorage.getItem(STORAGE_KEY) !== null && n >= 0 && n < GATEWAYS.length) return n
+  } catch {}
+  const own = GATEWAYS.findIndex((g) => g.startsWith(window.location.origin))
+  return own >= 0 ? own : 0
 }
 
 let active = loadActive()
@@ -37,9 +37,14 @@ export function imageUrl(path?: string | null): string | undefined {
   return `${GATEWAYS[active]}${path}`
 }
 
-async function req<T>(path: string, init?: RequestInit): Promise<T> {
+export async function gatewayFetch(path: string, init?: RequestInit): Promise<Response> {
   const { res, index } = await fetchWithFailover(path, init, active)
   setActive(index)
+  return res
+}
+
+async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await gatewayFetch(path, init)
   if (!res.ok) {
     throw new Error(`AniLiberty API ${res.status}: ${path}`)
   }

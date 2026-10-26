@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '../lib/api'
 import type { CatalogFilters, Genre, Release, ValueDescription } from '../../../shared/types'
 import AnimeCard from '../components/AnimeCard'
 import { GridSkeleton } from '../components/Skeleton'
-
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } }
 
 type SortOpt = ValueDescription & { label: string }
 
@@ -85,20 +82,20 @@ export default function Catalog() {
     setPage(1)
   }
 
-  return (
-    <div className="mx-auto max-w-7xl px-6 py-6">
-      <h1 className="mb-4 text-xl font-bold tracking-tight">
-        {searchQ ? `Поиск: «${searchQ}»` : 'Каталог'}
-      </h1>
+  const hasFilters = selectedGenres.length > 0 || selectedTypes.length > 0 || selectedSeasons.length > 0
 
-      <div className="flex gap-6">
+  return (
+    <div>
+      <div className="ph">
+        <div>
+          <h1>{searchQ ? `Поиск: ${searchQ}` : 'Каталог'}</h1>
+          <p>{searchQ ? 'Результаты по запросу' : 'Фильтры слева, сортировка по умолчанию: свежие'}</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap' }}>
         {!searchQ && (
-          <motion.aside
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-56 shrink-0 space-y-5 text-sm"
-          >
+          <aside style={{ width: 200, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 22 }}>
             <FilterGroup title="Сортировка">
               <select
                 value={sorting}
@@ -106,10 +103,11 @@ export default function Catalog() {
                   setSorting(e.target.value)
                   setPage(1)
                 }}
-                className="w-full rounded bg-white/5 px-2 py-1.5 text-xs outline-none"
+                className="input"
+                style={{ width: '100%', padding: '7px 10px', fontSize: 12.5 }}
               >
                 {refSorting.map((s) => (
-                  <option key={s.value} value={s.value} className="bg-surface">
+                  <option key={s.value} value={s.value}>
                     {s.label}
                   </option>
                 ))}
@@ -139,7 +137,7 @@ export default function Catalog() {
             </FilterGroup>
 
             <FilterGroup title="Жанры">
-              <div className="max-h-64 space-y-1 overflow-y-auto pr-1">
+              <div style={{ maxHeight: 260, overflowY: 'auto', paddingRight: 4 }}>
                 {refGenres.map((g) => (
                   <Check
                     key={g.id}
@@ -151,64 +149,46 @@ export default function Catalog() {
               </div>
             </FilterGroup>
 
-            <AnimatePresence>
-              {(selectedGenres.length > 0 || selectedTypes.length > 0 || selectedSeasons.length > 0) && (
-                <motion.button
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={() => {
-                    setSelectedGenres([])
-                    setSelectedTypes([])
-                    setSelectedSeasons([])
-                    setParams({})
-                    setPage(1)
-                  }}
-                  className="text-xs text-white/40 hover:text-white"
-                >
-                  Сбросить фильтры
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </motion.aside>
+            {hasFilters && (
+              <button
+                onClick={() => {
+                  setSelectedGenres([])
+                  setSelectedTypes([])
+                  setSelectedSeasons([])
+                  setParams({})
+                  setPage(1)
+                }}
+                className="btn btn-ghost btn-sm"
+              >
+                Сбросить фильтры
+              </button>
+            )}
+          </aside>
         )}
 
-        <div className="flex-1">
+        <div style={{ flex: 1, minWidth: 0 }}>
           {loading && <GridSkeleton count={18} />}
-          {!loading && results && results.length === 0 && (
-            <p className="py-16 text-center text-white/40">Ничего не найдено</p>
-          )}
+          {!loading && results && results.length === 0 && <p className="empty">Ничего не найдено</p>}
           {!loading && results && results.length > 0 && (
             <>
-              <motion.div
-                key={`${JSON.stringify(filters)}-${page}`}
-                variants={container}
-                initial="hidden"
-                animate="show"
-                className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
-              >
+              <div className="grid-posters fade-in">
                 {results.map((r) => (
                   <AnimeCard key={r.id} release={r} />
                 ))}
-              </motion.div>
+              </div>
 
               {!searchQ && totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-center gap-2 text-sm">
-                  <button
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    className="rounded-full bg-white/5 px-4 py-1.5 transition-colors hover:bg-white/10 disabled:opacity-30"
-                  >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 32 }}>
+                  <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="btn btn-ghost btn-sm">
                     Назад
                   </button>
-                  <span className="font-mono text-xs tabular-nums text-white/50">
+                  <span className="mono muted" style={{ fontSize: 12 }}>
                     {page} / {totalPages}
                   </span>
                   <button
                     disabled={page >= totalPages}
                     onClick={() => setPage((p) => p + 1)}
-                    className="rounded-full bg-white/5 px-4 py-1.5 transition-colors hover:bg-white/10 disabled:opacity-30"
+                    className="btn btn-ghost btn-sm"
                   >
                     Далее
                   </button>
@@ -225,7 +205,7 @@ export default function Catalog() {
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mono-label mb-2 text-white/40">{title}</h3>
+      <div className="label">{title}</div>
       {children}
     </div>
   )
@@ -241,14 +221,19 @@ function Check({
   onChange: () => void
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 py-0.5 text-white/70 hover:text-white">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        className="h-3.5 w-3.5 accent-[#FF3D5A]"
-      />
-      <span className="text-xs">{label}</span>
+    <label
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '3px 0',
+        cursor: 'pointer',
+        fontSize: 12.5,
+        color: checked ? 'var(--text)' : 'var(--text2)',
+      }}
+    >
+      <input type="checkbox" checked={checked} onChange={onChange} />
+      {label}
     </label>
   )
 }

@@ -226,7 +226,7 @@ export default function Player({ episode, resumeAt, onProgress, onEnded }: Props
     <div
       ref={wrapperRef}
       onMouseMove={wakeControls}
-      className="group relative overflow-hidden rounded-lg bg-black"
+      className="relative overflow-hidden rounded-md border border-white/10 bg-black"
       tabIndex={0}
     >
       <video
@@ -245,7 +245,7 @@ export default function Player({ episode, resumeAt, onProgress, onEnded }: Props
       {showSkip && (
         <button
           onClick={skip}
-          className="absolute bottom-20 right-4 flex items-center gap-1.5 rounded-lg bg-black/70 px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors hover:bg-accent-gradient"
+          className="absolute bottom-20 right-4 flex items-center gap-1.5 rounded-md border border-white/20 bg-black/85 px-4 py-2 text-sm font-medium transition-colors hover:bg-white hover:text-black"
         >
           <SkipIcon />
           Пропустить {showSkip === 'opening' ? 'опенинг' : 'эндинг'}
@@ -253,7 +253,7 @@ export default function Player({ episode, resumeAt, onProgress, onEnded }: Props
       )}
 
       <div
-        className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-3 pb-2 pt-8 transition-opacity duration-300 ${
+        className={`absolute inset-x-0 bottom-0 bg-black/85 px-3 pb-2 pt-2 transition-opacity duration-300 ${
           controlsVisible || !playing ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
@@ -312,7 +312,7 @@ export default function Player({ episode, resumeAt, onProgress, onEnded }: Props
               {showSettings && (
                 <div
                   onMouseLeave={() => setShowSettings(false)}
-                  className="glass absolute bottom-full right-0 mb-2 w-64 space-y-3 rounded-xl border border-white/10 p-3 text-sm shadow-2xl"
+                  className="absolute bottom-full right-0 mb-2 w-64 space-y-3 rounded-md border border-white/20 bg-[#0d0d0d] p-3 text-sm"
                 >
                   {available.length > 1 && (
                     <SettingsRow label="Качество">
@@ -321,8 +321,8 @@ export default function Player({ episode, resumeAt, onProgress, onEnded }: Props
                           <button
                             key={q.key}
                             onClick={() => setQuality(q.key)}
-                            className={`rounded px-1.5 py-0.5 text-xs font-semibold ${
-                              quality === q.key ? 'bg-accent-gradient' : 'bg-white/10 hover:bg-white/20'
+                            className={`rounded px-1.5 py-0.5 text-xs font-medium ${
+                              quality === q.key ? 'bg-white text-black' : 'bg-white/10 hover:bg-white/20'
                             }`}
                           >
                             {q.label}
@@ -398,12 +398,12 @@ function ToggleRow({
       <span className="text-white/70">{label}</span>
       <span
         className={`relative h-4 w-8 shrink-0 rounded-full transition-colors ${
-          checked ? 'bg-accent-gradient' : 'bg-white/15'
+          checked ? 'bg-white' : 'bg-white/15'
         }`}
       >
         <span
-          className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform ${
-            checked ? 'translate-x-4' : 'translate-x-0.5'
+          className={`absolute top-0.5 h-3 w-3 rounded-full transition-transform ${
+            checked ? 'translate-x-4 bg-black' : 'translate-x-0.5 bg-white'
           }`}
         />
       </span>

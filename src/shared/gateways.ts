@@ -1,6 +1,7 @@
 export const GATEWAYS = [
   'https://api.savsis.xyz/api/anilibria',
   'https://ani.savsis.xyz/api/anilibria',
+  'https://anisav.savsis.xyz/api/anilibria',
 ]
 
 const TIMEOUT_MS = 5000
