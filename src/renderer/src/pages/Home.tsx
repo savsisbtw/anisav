@@ -4,6 +4,9 @@ import { api, imageUrl } from '../lib/api'
 import { getContinueWatching, ContinueWatchingItem } from '../lib/continueWatching'
 import type { Release, ScheduleDay } from '../../../shared/types'
 import Row from '../components/Row'
+import Featured from '../components/Featured'
+import Reveal from '../components/Reveal'
+import { stagger } from '../lib/motion'
 import { GridSkeleton } from '../components/Skeleton'
 
 export default function Home() {
@@ -30,12 +33,14 @@ export default function Home() {
 
       {!latest && <GridSkeleton count={12} />}
 
+      {latest && latest.length > 0 && <Featured releases={latest} />}
+
       {continueWatching.length > 0 && (
-        <section className="section">
+        <Reveal className="section">
           <h2 className="section-title">Продолжить просмотр</h2>
           <div className="grid-posters">
-            {continueWatching.map((c) => (
-              <Link key={c.episode.id} to={`/title/${c.release.alias || c.release.id}`} className="poster">
+            {continueWatching.map((c, i) => (
+              <Link key={c.episode.id} to={`/title/${c.release.alias || c.release.id}`} state={{ release: c.release }} className="poster" style={stagger(i)}>
                 <div className="poster-img">
                   <img
                     src={imageUrl(c.release.poster?.optimized?.preview || c.release.poster?.preview)}
@@ -53,11 +58,11 @@ export default function Home() {
               </Link>
             ))}
           </div>
-        </section>
+        </Reveal>
       )}
 
-      <Row title="Онгоинги сегодня" releases={today?.map((s) => s.release).filter(Boolean) ?? []} />
-      <Row title="Последние обновления" releases={latest ?? []} />
+      <Row title="Онгоинги сегодня" to="/schedule" releases={today?.map((s) => s.release).filter(Boolean) ?? []} />
+      <Row title="Последние обновления" to="/catalog" releases={latest ?? []} />
       <Row title="Рекомендуем" releases={recommended ?? []} />
     </div>
   )

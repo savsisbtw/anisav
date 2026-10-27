@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { Genre } from '../../../shared/types'
 import Loader from '../components/Loader'
+import { stagger } from '../lib/motion'
 
 export default function Genres() {
   const [genres, setGenres] = useState<Genre[] | null>(null)
@@ -28,8 +29,8 @@ export default function Genres() {
           gap: 12,
         }}
       >
-        {genres.map((g) => (
-          <Link key={g.id} to={`/catalog?genre=${g.id}`} className="tile">
+        {genres.map((g, i) => (
+          <Link key={g.id} to={`/catalog?genre=${g.id}`} className="tile" style={stagger(i)}>
             <b>{g.name}</b>
             {g.total_releases != null && <span>{g.total_releases} тайтлов</span>}
           </Link>

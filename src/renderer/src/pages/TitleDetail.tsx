@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import type { CSSProperties } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 import { api, imageUrl } from '../lib/api'
 import type { Episode, Release, TimecodeItem } from '../../../shared/types'
 import { useAuth } from '../lib/AuthContext'
@@ -22,6 +23,7 @@ function formatBytes(n: number) {
 
 export default function TitleDetail() {
   const { idOrAlias } = useParams()
+  const location = useLocation()
   const { user } = useAuth()
   const [release, setRelease] = useState<Release | null>(null)
   const [error, setError] = useState(false)
@@ -64,9 +66,13 @@ export default function TitleDetail() {
       .catch(() => {})
   }, [user, idOrAlias])
 
+  const fromList = (location.state as { release?: Release } | null)?.release ?? null
+  const preview = fromList && String(fromList.alias || fromList.id) === idOrAlias ? fromList : null
+  const view = release ?? preview
+
   const poster = useMemo(
-    () => imageUrl(release?.poster?.optimized?.preview || release?.poster?.preview),
-    [release]
+    () => imageUrl(view?.poster?.optimized?.preview || view?.poster?.preview),
+    [view]
   )
 
   const saveTimecode = useCallback(
@@ -90,14 +96,14 @@ export default function TitleDetail() {
   }
 
   if (error) return <p className="empty">Тайтл не найден</p>
-  if (!release) return <Loader label="Загружаем..." />
+  if (!view) return <Loader label="Загружаем..." />
 
   return (
     <div>
       <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
         <img
           src={poster}
-          alt={release.name.main}
+          alt={view.name.main}
           style={{
             width: 192,
             height: 'fit-content',
@@ -105,42 +111,43 @@ export default function TitleDetail() {
             borderRadius: 6,
             border: '1px solid var(--line)',
             objectFit: 'cover',
+            ...({ viewTransitionName: 'poster-shared' } as unknown as CSSProperties),
           }}
         />
-        <div style={{ minWidth: 0, flex: 1, minInlineSize: 260 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, lineHeight: 1.2 }}>{release.name.main}</h1>
-          {release.name.english && (
+        <div className="stagger" style={{ minWidth: 0, flex: 1, minInlineSize: 260 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, lineHeight: 1.2 }}>{view.name.main}</h1>
+          {view.name.english && (
             <p className="mono muted" style={{ margin: '6px 0 0', fontSize: 12 }}>
-              {release.name.english}
+              {view.name.english}
             </p>
           )}
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 16 }}>
-            {release.type?.description && <span className="chip">{release.type.description}</span>}
-            {release.year && <span className="chip mono">{release.year}</span>}
-            {release.season?.description && <span className="chip">{release.season.description}</span>}
-            {release.age_rating?.label && <span className="chip mono">{release.age_rating.label}</span>}
-            {release.is_ongoing && (
+            {view.type?.description && <span className="chip">{view.type.description}</span>}
+            {view.year && <span className="chip mono">{view.year}</span>}
+            {view.season?.description && <span className="chip">{view.season.description}</span>}
+            {view.age_rating?.label && <span className="chip mono">{view.age_rating.label}</span>}
+            {view.is_ongoing && (
               <span className="chip on">
                 <span className="dot" />
                 Онгоинг
               </span>
             )}
-            {release.episodes_total != null && <span className="chip mono">{release.episodes_total} эп.</span>}
+            {view.episodes_total != null && <span className="chip mono">{view.episodes_total} эп.</span>}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16 }}>
-            <AddToListButton releaseId={release.id} />
-            <WishlistButton release={release} />
+            <AddToListButton releaseId={view.id} />
+            <WishlistButton release={view} />
           </div>
 
-          {!!release.genres?.length && (
+          {!!view.genres?.length && (
             <p className="muted" style={{ margin: '16px 0 0', fontSize: 12.5 }}>
-              {release.genres.map((g) => g.name).join(' · ')}
+              {view.genres.map((g) => g.name).join(' · ')}
             </p>
           )}
 
-          {release.description && (
+          {view.description && (
             <p
               style={{
                 margin: '16px 0 0',
@@ -151,11 +158,13 @@ export default function TitleDetail() {
                 color: 'var(--text2)',
               }}
             >
-              {release.description}
+              {view.description}
             </p>
           )}
         </div>
       </div>
+
+      {!release && <div className="skeleton" style={{ height: 320, marginTop: 32 }} />}
 
       {selectedEp && (
         <div style={{ marginTop: 32 }}>
@@ -172,13 +181,14 @@ export default function TitleDetail() {
         </div>
       )}
 
-      {!!release.episodes?.length && (
+      {!!release?.episodes?.length && (
         <section className="section" style={{ marginTop: 32 }}>
           <h2 className="section-title">
             Серии
             <span className="mono">{release.episodes.length}</span>
           </h2>
           <div
+            className="stagger"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
@@ -207,7 +217,7 @@ export default function TitleDetail() {
         </section>
       )}
 
-      {!!release.torrents?.length && (
+      {!!release?.torrents?.length && (
         <section className="section">
           <h2 className="section-title">Торренты</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

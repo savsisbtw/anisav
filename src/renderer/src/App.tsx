@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import ErrorBoundary from './components/ErrorBoundary'
+import Spotlight from './components/Spotlight'
 import PageTransition from './components/PageTransition'
 import Home from './pages/Home'
 import Catalog from './pages/Catalog'
@@ -14,6 +15,7 @@ import Wishlist from './pages/Wishlist'
 export default function App() {
   return (
     <div className="shell">
+      <Spotlight />
       <Sidebar />
       <main className="main">
         <ErrorBoundary>

@@ -1,0 +1,561 @@
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-only {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop-modal {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes bar-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07);
+  }
+}
+
+@keyframes dot-wave {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.page-in {
+  animation: rise 0.26s var(--ease-out) both;
+}
+
+[data-vt='1'] .page-in {
+  animation: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+}
+
+::view-transition-group(poster-shared) {
+  animation-duration: 0.42s;
+  animation-timing-function: var(--ease-out);
+}
+
+.main {
+  position: relative;
+  z-index: 1;
+}
+
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1.3px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(circle 230px at var(--sx, 50%) var(--sy, 30%), #000, transparent);
+  mask-image: radial-gradient(circle 230px at var(--sx, 50%) var(--sy, 30%), #000, transparent);
+}
+
+.spotlight[data-on='1'] {
+  opacity: 1;
+}
+
+.nav-items {
+  position: relative;
+}
+
+.nav-items .nav-btn {
+  position: relative;
+}
+
+.nav-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  pointer-events: none;
+}
+
+.nav-indicator {
+  transition: opacity 0.2s ease;
+}
+
+.nav-indicator[data-ready='1'] {
+  transition: transform 0.26s var(--ease-in-out), opacity 0.2s ease;
+}
+
+.nav-items[data-ind='1'] .nav-btn.on {
+  background: transparent;
+}
+
+.tabs {
+  position: relative;
+}
+
+.tab-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.tab-indicator::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--text);
+}
+
+.tab-indicator[data-ready='1'] {
+  transition: transform 0.26s var(--ease-in-out);
+}
+
+.tabs[data-ind='1'] .tab.on {
+  border-bottom-color: transparent;
+}
+
+.btn {
+  transition: opacity 0.12s ease, border-color 0.12s ease, transform 0.14s var(--ease-out);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.icon-btn {
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease, transform 0.14s var(--ease-out);
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+.ep {
+  transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease, transform 0.14s var(--ease-out);
+}
+
+.ep:active {
+  transform: scale(0.98);
+}
+
+.menu {
+  transform-origin: top left;
+  animation: pop 0.16s var(--ease-out) both;
+}
+
+.modal {
+  animation: pop-modal 0.22s var(--ease-out) both;
+}
+
+.poster {
+  animation: rise 0.3s var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 40ms);
+}
+
+[data-motion='lite'] .poster {
+  animation-duration: 0.2s;
+  animation-delay: calc(min(var(--i, 0), 6) * 18ms);
+}
+
+[data-motion='rich'] .reveal .poster {
+  animation: none;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.38s var(--ease-out), transform 0.38s var(--ease-out);
+  transition-delay: calc(min(var(--i, 0), 12) * 45ms);
+}
+
+[data-motion='rich'] .reveal.in .poster {
+  opacity: 1;
+  transform: none;
+}
+
+[data-motion='rich'] .reveal .section-title {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+}
+
+[data-motion='rich'] .reveal.in .section-title {
+  opacity: 1;
+  transform: none;
+}
+
+.section-link {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  transition: color 0.12s ease;
+}
+
+.section-link:hover {
+  color: var(--text);
+}
+
+.tile {
+  animation: rise 0.28s var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 16) * 30ms);
+  transition: border-color 0.12s ease, transform 0.18s var(--ease-out);
+}
+
+[data-motion='lite'] .tile {
+  animation-duration: 0.2s;
+  animation-delay: calc(min(var(--i, 0), 8) * 15ms);
+}
+
+.stagger > * {
+  animation: rise 0.32s var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 10) * 50ms);
+}
+
+[data-motion='lite'] .stagger > * {
+  animation-duration: 0.2s;
+  animation-delay: calc(min(var(--i, 0), 6) * 20ms);
+}
+
+.stagger > :nth-child(1) { --i: 0; }
+.stagger > :nth-child(2) { --i: 1; }
+.stagger > :nth-child(3) { --i: 2; }
+.stagger > :nth-child(4) { --i: 3; }
+.stagger > :nth-child(5) { --i: 4; }
+.stagger > :nth-child(6) { --i: 5; }
+.stagger > :nth-child(7) { --i: 6; }
+.stagger > :nth-child(8) { --i: 7; }
+.stagger > :nth-child(9) { --i: 8; }
+.stagger > :nth-child(10) { --i: 9; }
+.stagger > :nth-child(n + 11) { --i: 10; }
+
+@media (hover: hover) and (pointer: fine) {
+  [data-motion='lite'] .poster-img {
+    transition: border-color 0.12s ease, transform 0.18s var(--ease-out);
+  }
+
+  [data-motion='lite'] .poster:hover .poster-img {
+    transform: translateY(-2px);
+  }
+
+  [data-motion='rich'] .poster-img img {
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  [data-motion='rich'] .poster:hover .poster-img img {
+    transform: scale(1.05);
+  }
+
+  .tile:hover {
+    transform: translateY(-2px);
+  }
+}
+
+[data-motion='rich'] .poster-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.14), transparent 55%);
+}
+
+[data-motion='rich'] .poster:hover .poster-img::after {
+  opacity: 1;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-motion='rich'] .skeleton {
+  animation: none;
+}
+
+[data-motion='rich'] .skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+  transform: translateX(-100%);
+  animation: sweep 1.3s linear infinite;
+}
+
+.dots i {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin-left: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: dot-wave 1.2s ease-in-out infinite;
+}
+
+.dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.featured {
+  position: relative;
+  margin-bottom: 36px;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.featured-stage {
+  display: grid;
+}
+
+.featured-slide {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s var(--ease-out);
+}
+
+.featured-slide.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.f-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.f-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.f-title {
+  margin: 0;
+  max-width: 620px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.f-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  max-width: 560px;
+  color: var(--text2);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.f-poster {
+  flex: 0 0 168px;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: var(--surface2);
+  border: 1px solid var(--line2);
+  border-radius: var(--r-sm);
+}
+
+.f-poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+[data-motion='rich'] .featured-slide.on .f-poster img {
+  animation: kenburns 8s var(--ease-out) both;
+}
+
+[data-motion='rich'] .featured-slide.on .f-text > * {
+  animation: rise 0.42s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
+}
+
+.f-progress {
+  display: flex;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.f-seg {
+  position: relative;
+  flex: 0 0 30px;
+  height: 3px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--line2);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.f-seg i {
+  position: absolute;
+  inset: 0;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.f-seg.done i {
+  transform: scaleX(1);
+}
+
+.f-seg.on i {
+  animation: bar-fill var(--dur, 7000ms) linear both;
+}
+
+.featured:hover .f-seg.on i {
+  animation-play-state: paused;
+}
+
+@media (max-width: 860px) {
+  .featured {
+    padding: 18px;
+  }
+
+  .featured-slide {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .f-poster {
+    flex: none;
+    width: 116px;
+  }
+
+  .f-title {
+    font-size: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-in,
+  .poster,
+  .tile,
+  .stagger > *,
+  .menu,
+  .modal {
+    animation: fade-only 0.2s ease both !important;
+    animation-delay: 0s !important;
+  }
+
+  [data-motion='rich'] .reveal .poster,
+  [data-motion='rich'] .reveal .section-title {
+    transform: none !important;
+    transition: opacity 0.2s ease !important;
+    transition-delay: 0s !important;
+  }
+
+  .poster-img,
+  .poster-img img,
+  .tile:hover,
+  .btn:active,
+  .icon-btn:active,
+  .ep:active {
+    transform: none !important;
+  }
+
+  .nav-indicator[data-ready='1'],
+  .tab-indicator[data-ready='1'] {
+    transition: none;
+  }
+
+  [data-motion='rich'] .skeleton::after,
+  .dots i,
+  .f-poster img,
+  .f-text > * {
+    animation: none !important;
+  }
+
+  .f-seg.on i {
+    animation: none;
+    transform: scaleX(1);
+  }
+
+  .featured-slide {
+    transition: opacity 0.2s ease;
+  }
+}

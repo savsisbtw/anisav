@@ -172,8 +172,8 @@ export default function Catalog() {
           {!loading && results && results.length > 0 && (
             <>
               <div className="grid-posters fade-in">
-                {results.map((r) => (
-                  <AnimeCard key={r.id} release={r} />
+                {results.map((r, i) => (
+                  <AnimeCard key={r.id} release={r} index={i} />
                 ))}
               </div>
 

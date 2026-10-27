@@ -3,6 +3,7 @@ import { api } from '../lib/api'
 import type { ScheduleDay } from '../../../shared/types'
 import AnimeCard from '../components/AnimeCard'
 import Loader from '../components/Loader'
+import Reveal from '../components/Reveal'
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 7]
 
@@ -32,17 +33,17 @@ export default function Schedule() {
         </div>
       </div>
       {DAY_ORDER.filter((d) => byDay.has(d)).map((day) => (
-        <section key={day} className="section">
+        <Reveal key={day} className="section">
           <h2 className="section-title">
             {byDay.get(day)![0].release.publish_day?.description}
             <span className="mono">{byDay.get(day)!.length}</span>
           </h2>
           <div className="grid-posters">
-            {byDay.get(day)!.map((item) => (
-              <AnimeCard key={item.release.id} release={item.release} />
+            {byDay.get(day)!.map((item, i) => (
+              <AnimeCard key={item.release.id} release={item.release} index={i} />
             ))}
           </div>
-        </section>
+        </Reveal>
       ))}
     </div>
   )

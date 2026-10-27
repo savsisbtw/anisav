@@ -21,8 +21,8 @@ export default function Wishlist() {
 
       {items.length > 0 && (
         <div className="grid-posters">
-          {items.map((r) => (
-            <AnimeCard key={r.id} release={r} />
+          {items.map((r, i) => (
+            <AnimeCard key={r.id} release={r} index={i} />
           ))}
         </div>
       )}

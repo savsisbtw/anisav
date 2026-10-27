@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useSlidingIndicator } from '../lib/motion'
 import { useAuth } from '../lib/AuthContext'
 import type { CollectionType, Release } from '../../../shared/types'
 import AnimeCard from '../components/AnimeCard'
@@ -17,6 +18,8 @@ export default function MyLists() {
   const { user, loading: authLoading } = useAuth()
   const [tab, setTab] = useState<(typeof TABS)[number]['key']>('WATCHING')
   const [releases, setReleases] = useState<Release[] | null>(null)
+  const tabsRef = useRef<HTMLDivElement>(null)
+  const indicator = useSlidingIndicator(tabsRef, '.tab.on', tab)
 
   useEffect(() => {
     if (!user) return
@@ -40,7 +43,10 @@ export default function MyLists() {
         </div>
       </div>
 
-      <div className="tabs">
+      <div className="tabs" ref={tabsRef} data-ind={indicator.style ? '1' : undefined}>
+        {indicator.style && (
+          <span className="tab-indicator" style={indicator.style} data-ready={indicator.ready ? '1' : undefined} />
+        )}
         {TABS.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)} className={`tab${tab === t.key ? ' on' : ''}`}>
             {t.label}
@@ -52,8 +58,8 @@ export default function MyLists() {
       {releases && releases.length === 0 && <p className="empty">Список пуст</p>}
       {releases && releases.length > 0 && (
         <div key={tab} className="grid-posters fade-in">
-          {releases.map((r) => (
-            <AnimeCard key={r.id} release={r} />
+          {releases.map((r, i) => (
+            <AnimeCard key={r.id} release={r} index={i} />
           ))}
         </div>
       )}
