@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import { onlyOnYummy, yummySearch } from '../lib/yummy'
 import type { CatalogFilters, Genre, Release, ValueDescription } from '../../../shared/types'
 import AnimeCard from '../components/AnimeCard'
 import { GridSkeleton } from '../components/Skeleton'
@@ -26,6 +27,8 @@ export default function Catalog() {
   const [results, setResults] = useState<Release[] | null>(null)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [yummyExtra, setYummyExtra] = useState<Release[]>([])
+  const [yummyLoading, setYummyLoading] = useState(false)
 
   useEffect(() => {
     api.refGenres().then(setRefGenres).catch(() => {})
@@ -50,27 +53,43 @@ export default function Catalog() {
   )
 
   useEffect(() => {
+    let cancelled = false
     setLoading(true)
     setResults(null)
+    setYummyExtra([])
     if (searchQ) {
+      setYummyLoading(true)
       api
         .search(searchQ)
         .then((data) => {
+          if (cancelled) return
           setResults(data)
           setTotalPages(1)
         })
-        .catch(() => setResults([]))
-        .finally(() => setLoading(false))
-      return
+        .catch(() => !cancelled && setResults([]))
+        .finally(() => !cancelled && setLoading(false))
+      yummySearch(searchQ)
+        .then(onlyOnYummy)
+        .then((extra) => !cancelled && setYummyExtra(extra))
+        .catch(() => {})
+        .finally(() => !cancelled && setYummyLoading(false))
+      return () => {
+        cancelled = true
+      }
     }
+    setYummyLoading(false)
     api
       .catalog(filters, page, 24)
       .then((res) => {
+        if (cancelled) return
         setResults(res.data)
         setTotalPages(res.meta.pagination.total_pages)
       })
-      .catch(() => setResults([]))
-      .finally(() => setLoading(false))
+      .catch(() => !cancelled && setResults([]))
+      .finally(() => !cancelled && setLoading(false))
+    return () => {
+      cancelled = true
+    }
   }, [filters, page, searchQ])
 
   function toggle(list: number[], value: number, set: (v: number[]) => void) {
@@ -168,7 +187,9 @@ export default function Catalog() {
 
         <div style={{ flex: 1, minWidth: 0 }}>
           {loading && <GridSkeleton count={18} />}
-          {!loading && results && results.length === 0 && <p className="empty">Ничего не найдено</p>}
+          {!loading && results && results.length === 0 && yummyExtra.length === 0 && !yummyLoading && (
+            <p className="empty">Ничего не найдено</p>
+          )}
           {!loading && results && results.length > 0 && (
             <>
               <div className="grid-posters fade-in">
@@ -195,6 +216,24 @@ export default function Catalog() {
                 </div>
               )}
             </>
+          )}
+
+          {searchQ && !loading && (yummyLoading || yummyExtra.length > 0) && (
+            <section className="section" style={{ marginTop: results && results.length ? 36 : 0 }}>
+              <h2 className="section-title">
+                Только на Yummy
+                {yummyExtra.length > 0 && <span className="mono">{yummyExtra.length}</span>}
+              </h2>
+              {yummyLoading && yummyExtra.length === 0 ? (
+                <GridSkeleton count={6} />
+              ) : (
+                <div className="grid-posters fade-in">
+                  {yummyExtra.map((r, i) => (
+                    <AnimeCard key={r.id} release={r} index={i} />
+                  ))}
+                </div>
+              )}
+            </section>
           )}
         </div>
       </div>

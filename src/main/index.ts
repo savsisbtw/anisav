@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, safeStorage, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, safeStorage, session, shell } from 'electron'
 import { join } from 'path'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { GATEWAYS, fetchWithFailover } from '../shared/gateways'
@@ -171,6 +171,25 @@ function registerIpc(): void {
   )
 }
 
+const PLAYER_URLS = [
+  'https://*.yani.tv/*',
+  'https://kodikplayer.com/*',
+  'https://*.kodikplayer.com/*',
+  'https://kodik.info/*',
+  'https://*.kodik.info/*',
+  'https://kodik.cc/*',
+  'https://*.kodik.cc/*',
+  'https://alloha.tv/*',
+  'https://*.alloha.tv/*',
+]
+
+function setPlayerReferer(): void {
+  session.defaultSession.webRequest.onBeforeSendHeaders({ urls: PLAYER_URLS }, (details, callback) => {
+    if (details.resourceType === 'subFrame') details.requestHeaders['Referer'] = 'https://anisav.savsis.xyz/'
+    callback({ requestHeaders: details.requestHeaders })
+  })
+}
+
 function createWindow(): void {
   const win = new BrowserWindow({
     width: 1360,
@@ -201,6 +220,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   registerIpc()
+  setPlayerReferer()
   createWindow()
 
   app.on('activate', () => {

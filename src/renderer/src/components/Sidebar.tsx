@@ -11,6 +11,7 @@ const NAV = [
   { to: '/catalog', label: 'Каталог' },
   { to: '/schedule', label: 'Расписание' },
   { to: '/genres', label: 'Жанры' },
+  { to: '/yummy', label: 'Yummy' },
   { to: '/wishlist', label: 'Понравилось' },
 ]
 

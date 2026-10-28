@@ -98,6 +98,19 @@ export interface Release {
   episodes?: Episode[]
   torrents?: Torrent[]
   latest_episode?: Episode
+  source?: 'yummy'
+  yummy_id?: number
+  blocked_in?: string[]
+  remote?: { anilibria_alias?: string; shikimori_id?: number; myanimelist_id?: number }
+}
+
+export interface YummyVideo {
+  id: number
+  number: string
+  player: string
+  dubbing: string
+  url: string
+  duration: number
 }
 
 export interface ScheduleDay {

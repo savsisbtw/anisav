@@ -7,6 +7,7 @@ import Row from '../components/Row'
 import Featured from '../components/Featured'
 import Reveal from '../components/Reveal'
 import { stagger } from '../lib/motion'
+import { onlyOnYummy, yummyCatalog } from '../lib/yummy'
 import { GridSkeleton } from '../components/Skeleton'
 
 export default function Home() {
@@ -14,8 +15,13 @@ export default function Home() {
   const [recommended, setRecommended] = useState<Release[] | null>(null)
   const [today, setToday] = useState<ScheduleDay[] | null>(null)
   const [continueWatching, setContinueWatching] = useState<ContinueWatchingItem[]>([])
+  const [yummyOnly, setYummyOnly] = useState<Release[]>([])
 
   useEffect(() => {
+    yummyCatalog('views', 0, 60)
+      .then((page) => onlyOnYummy(page.items))
+      .then((items) => setYummyOnly(items.slice(0, 14)))
+      .catch(() => {})
     api.latest(21).then(setLatest).catch(() => setLatest([]))
     api.recommended(14).then(setRecommended).catch(() => setRecommended([]))
     api.scheduleNow().then((s) => setToday(s.today)).catch(() => setToday([]))
@@ -64,6 +70,7 @@ export default function Home() {
       <Row title="Онгоинги сегодня" to="/schedule" releases={today?.map((s) => s.release).filter(Boolean) ?? []} />
       <Row title="Последние обновления" to="/catalog" releases={latest ?? []} />
       <Row title="Рекомендуем" releases={recommended ?? []} />
+      <Row title="Только на Yummy" to="/yummy" releases={yummyOnly} />
     </div>
   )
 }

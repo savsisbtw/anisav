@@ -12,11 +12,12 @@ export default function AnimeCard({ release, index = 0 }: { release: Release; in
 
   const poster = imageUrl(release.poster?.optimized?.preview || release.poster?.preview)
   const title = release.name.main
-  const to = `/title/${release.alias || release.id}`
+  const to = release.source === 'yummy' ? `/yummy/${release.yummy_id}` : `/title/${release.alias || release.id}`
   const meta = [
     release.year,
     release.type?.description,
-    release.episodes_total != null ? `${release.episodes_total} эп.` : null,
+    release.episodes_total ? `${release.episodes_total} эп.` : null,
+    release.source === 'yummy' ? 'Yummy' : null,
   ]
     .filter(Boolean)
     .join(' · ')

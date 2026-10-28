@@ -11,6 +11,8 @@ import TitleDetail from './pages/TitleDetail'
 import MyLists from './pages/MyLists'
 import History from './pages/History'
 import Wishlist from './pages/Wishlist'
+import Yummy from './pages/Yummy'
+import YummyTitle from './pages/YummyTitle'
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
             <Route path="/genres" element={<PageTransition><Genres /></PageTransition>} />
             <Route path="/schedule" element={<PageTransition><Schedule /></PageTransition>} />
             <Route path="/title/:idOrAlias" element={<PageTransition><TitleDetail /></PageTransition>} />
+            <Route path="/yummy" element={<PageTransition><Yummy /></PageTransition>} />
+            <Route path="/yummy/:id" element={<PageTransition><YummyTitle /></PageTransition>} />
             <Route path="/lists" element={<PageTransition><MyLists /></PageTransition>} />
             <Route path="/history" element={<PageTransition><History /></PageTransition>} />
             <Route path="/wishlist" element={<PageTransition><Wishlist /></PageTransition>} />
