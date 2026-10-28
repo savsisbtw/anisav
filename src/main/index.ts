@@ -173,6 +173,8 @@ function registerIpc(): void {
 
 const PLAYER_URLS = [
   'https://*.yani.tv/*',
+  'https://*.yummyani.me/*',
+  'https://*.aksor.tv/*',
   'https://kodikplayer.com/*',
   'https://*.kodikplayer.com/*',
   'https://kodik.info/*',
@@ -187,6 +189,24 @@ function setPlayerReferer(): void {
   session.defaultSession.webRequest.onBeforeSendHeaders({ urls: PLAYER_URLS }, (details, callback) => {
     if (details.resourceType === 'subFrame') details.requestHeaders['Referer'] = 'https://anisav.savsis.xyz/'
     callback({ requestHeaders: details.requestHeaders })
+  })
+}
+
+function allowPlayerFraming(): void {
+  session.defaultSession.webRequest.onHeadersReceived({ urls: PLAYER_URLS }, (details, callback) => {
+    if (details.resourceType !== 'subFrame') {
+      callback({})
+      return
+    }
+    const headers = details.responseHeaders ?? {}
+    for (const name of Object.keys(headers)) {
+      const lower = name.toLowerCase()
+      if (lower === 'x-frame-options') delete headers[name]
+      if (lower === 'content-security-policy') {
+        headers[name] = headers[name].map((v) => v.replace(/frame-ancestors[^;]*;?/gi, ''))
+      }
+    }
+    callback({ responseHeaders: headers })
   })
 }
 
@@ -221,6 +241,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   registerIpc()
   setPlayerReferer()
+  allowPlayerFraming()
   createWindow()
 
   app.on('activate', () => {

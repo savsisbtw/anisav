@@ -4,6 +4,7 @@ const INDEX_ORIGINS = ['https://anisav.savsis.xyz', 'https://ani.savsis.xyz']
 const BASE = 'https://api.yani.tv'
 const TOKEN = (import.meta.env.VITE_YUMMY_TOKEN as string | undefined) || ''
 const TIMEOUT_MS = 8000
+const PLAYER_HOSTS = ['kodikplayer.com', 'yani.tv', 'yummyani.me', 'aksor.tv', 'youtube.com', 'rutube.ru']
 
 const SEASONS: Record<number, { value: string; description: string }> = {
   1: { value: 'winter', description: 'Зима' },
@@ -167,6 +168,16 @@ export async function yummyTitle(id: number): Promise<Release> {
   return toRelease(row)
 }
 
+function isPlayerUrl(url: string): boolean {
+  try {
+    const u = new URL(url)
+    if (u.protocol !== 'https:') return false
+    return PLAYER_HOSTS.some((h) => u.hostname === h || u.hostname.endsWith(`.${h}`))
+  } catch {
+    return false
+  }
+}
+
 export async function yummyVideos(id: number): Promise<YummyVideo[]> {
   const rows = await get<
     {
@@ -186,7 +197,7 @@ export async function yummyVideos(id: number): Promise<YummyVideo[]> {
       url: v.iframe_url.startsWith('//') ? `https:${v.iframe_url}` : v.iframe_url,
       duration: v.duration || 0,
     }))
-    .filter((v) => v.url.startsWith('https://'))
+    .filter((v) => isPlayerUrl(v.url))
 }
 
 export async function onlyOnYummy(items: Release[]): Promise<Release[]> {
