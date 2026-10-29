@@ -6,6 +6,7 @@ import { AuthProvider } from './lib/AuthContext'
 import { installWebBridge } from './lib/webBridge'
 import './index.css'
 import './motion.css'
+import './polish.css'
 
 document.documentElement.dataset.motion = typeof window.anisav === 'undefined' ? 'rich' : 'lite'
 

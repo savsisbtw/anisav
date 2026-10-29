@@ -9,6 +9,7 @@ import Loader from '../components/Loader'
 import Player from '../components/Player'
 import AddToListButton from '../components/AddToListButton'
 import WishlistButton from '../components/WishlistButton'
+import TitleBackdrop from '../components/TitleBackdrop'
 
 function formatBytes(n: number) {
   const units = ['Б', 'КБ', 'МБ', 'ГБ']
@@ -99,11 +100,13 @@ export default function TitleDetail() {
   if (!view) return <Loader label="Загружаем..." />
 
   return (
-    <div>
+    <div className="title-root">
+      <TitleBackdrop src={poster} />
       <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
         <img
           src={poster}
           alt={view.name.main}
+          className="title-poster"
           style={{
             width: 192,
             height: 'fit-content',

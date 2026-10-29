@@ -10,6 +10,7 @@ function Slide({ release, on }: { release: Release; on: boolean }) {
   const navigate = useNavigate()
   const posterRef = useRef<HTMLDivElement>(null)
   const poster = imageUrl(release.poster?.optimized?.preview || release.poster?.preview)
+  const backdrop = imageUrl(release.poster?.optimized?.thumbnail || release.poster?.thumbnail || release.poster?.preview)
   const to = `/title/${release.alias || release.id}`
   const meta = [
     release.year,
@@ -21,6 +22,8 @@ function Slide({ release, on }: { release: Release; on: boolean }) {
 
   return (
     <div className={`featured-slide${on ? ' on' : ''}`} aria-hidden={!on}>
+      {backdrop && <div className="f-backdrop" style={{ backgroundImage: `url("${backdrop}")` }} />}
+      <div className="f-shade" />
       <div className="f-text">
         <div style={stagger(0)} className="f-label">
           <span className="chip on">

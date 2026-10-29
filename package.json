@@ -1,6 +1,6 @@
 {
   "name": "anisav",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "AniSav — desktop anime client powered by AniLiberty, via api.savsis.xyz",
   "main": "./out/main/index.js",
   "author": "savsis",

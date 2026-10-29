@@ -6,6 +6,7 @@ import { imageUrl } from '../lib/api'
 import { yummyTitle, yummyVideos } from '../lib/yummy'
 import Loader from '../components/Loader'
 import WishlistButton from '../components/WishlistButton'
+import TitleBackdrop from '../components/TitleBackdrop'
 
 function unique(list: string[]) {
   return list.filter((v, i) => list.indexOf(v) === i)
@@ -81,12 +82,14 @@ export default function YummyTitle() {
   const blockedInRu = view.blocked_in?.includes('RU')
 
   return (
-    <div>
+    <div className="title-root">
+      <TitleBackdrop src={poster} />
       <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
         {poster && (
           <img
             src={poster}
             alt={view.name.main}
+            className="title-poster"
             style={{
               width: 192,
               height: 'fit-content',
@@ -203,17 +206,7 @@ export default function YummyTitle() {
             </button>
           </div>
 
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              aspectRatio: '16 / 9',
-              background: '#000',
-              border: '1px solid var(--line)',
-              borderRadius: 6,
-              overflow: 'hidden',
-            }}
-          >
+          <div className="player-frame">
             <iframe
               key={active.id}
               src={active.url}
@@ -221,7 +214,6 @@ export default function YummyTitle() {
               sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
               allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               referrerPolicy="origin"
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
             />
           </div>
 

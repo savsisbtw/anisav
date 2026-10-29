@@ -114,7 +114,7 @@ export default function Catalog() {
 
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap' }}>
         {!searchQ && (
-          <aside style={{ width: 200, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 22 }}>
+          <aside style={{ width: 220, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 22 }}>
             <FilterGroup title="Сортировка">
               <select
                 value={sorting}
@@ -134,35 +134,39 @@ export default function Catalog() {
             </FilterGroup>
 
             <FilterGroup title="Тип">
-              {refTypes.map((t) => (
-                <Check
-                  key={t.value}
-                  label={t.description}
-                  checked={selectedTypes.includes(t.value)}
-                  onChange={() => toggleStr(selectedTypes, t.value, setSelectedTypes)}
-                />
-              ))}
+              <div className="filter-chips">
+                {refTypes.map((t) => (
+                  <Toggle
+                    key={t.value}
+                    label={t.description}
+                    on={selectedTypes.includes(t.value)}
+                    onClick={() => toggleStr(selectedTypes, t.value, setSelectedTypes)}
+                  />
+                ))}
+              </div>
             </FilterGroup>
 
             <FilterGroup title="Сезон">
-              {refSeasons.map((s) => (
-                <Check
-                  key={s.value}
-                  label={s.description}
-                  checked={selectedSeasons.includes(s.value)}
-                  onChange={() => toggleStr(selectedSeasons, s.value, setSelectedSeasons)}
-                />
-              ))}
+              <div className="filter-chips">
+                {refSeasons.map((s) => (
+                  <Toggle
+                    key={s.value}
+                    label={s.description}
+                    on={selectedSeasons.includes(s.value)}
+                    onClick={() => toggleStr(selectedSeasons, s.value, setSelectedSeasons)}
+                  />
+                ))}
+              </div>
             </FilterGroup>
 
             <FilterGroup title="Жанры">
-              <div style={{ maxHeight: 260, overflowY: 'auto', paddingRight: 4 }}>
+              <div className="filter-chips filter-scroll">
                 {refGenres.map((g) => (
-                  <Check
+                  <Toggle
                     key={g.id}
                     label={g.name}
-                    checked={selectedGenres.includes(g.id)}
-                    onChange={() => toggle(selectedGenres, g.id, setSelectedGenres)}
+                    on={selectedGenres.includes(g.id)}
+                    onClick={() => toggle(selectedGenres, g.id, setSelectedGenres)}
                   />
                 ))}
               </div>
@@ -250,29 +254,10 @@ function FilterGroup({ title, children }: { title: string; children: React.React
   )
 }
 
-function Check({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string
-  checked: boolean
-  onChange: () => void
-}) {
+function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
   return (
-    <label
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '3px 0',
-        cursor: 'pointer',
-        fontSize: 12.5,
-        color: checked ? 'var(--text)' : 'var(--text2)',
-      }}
-    >
-      <input type="checkbox" checked={checked} onChange={onChange} />
+    <button type="button" aria-pressed={on} onClick={onClick} className={`chip-toggle${on ? ' on' : ''}`}>
       {label}
-    </label>
+    </button>
   )
 }
